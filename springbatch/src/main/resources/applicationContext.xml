@@ -11,13 +11,13 @@
 	<context:component-scan base-package="com.mark.rnd.springbatch"></context:component-scan>
 
 
-	<batch:job id="rateJob">
-		<batch:step id="singleStep">
-			<batch:tasklet>
-				<batch:chunk reader="rateItemReader" writer="rateItemWriter" />
-			</batch:tasklet>
-		</batch:step>
-	</batch:job>
+<!-- 	<batch:job id="rateJob"> -->
+<!-- 		<batch:step id="singleStep"> -->
+<!-- 			<batch:tasklet> -->
+<!-- 				<batch:chunk reader="rateItemReader" writer="rateItemWriter" /> -->
+<!-- 			</batch:tasklet> -->
+<!-- 		</batch:step> -->
+<!-- 	</batch:job> -->
 
 	<bean id="rateItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
 		<property name="resource" value="ratedatafile.txt" />
@@ -44,8 +44,6 @@
 			value="branch,xrateType,currency,qouteType,midRate,centralBankRate,buySpread,sellSpread,buyRate,sellRate" />
 	</bean>
 
-
-
 	<bean id="rateItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
 		<property name="resource" value="file:target/outputs/ratepassthrough.txt" />
 		<property name="lineAggregator">
@@ -53,5 +51,15 @@
 				class="org.springframework.batch.item.file.transform.PassThroughLineAggregator" />
 		</property>
 	</bean>
+
+
+	<bean id="helloWorld" class="com.mark.rnd.springbatch.HelloWorld" />
+	<batch:step id="helloWorldStep">
+		<batch:tasklet ref="helloWorld" />
+	</batch:step>
+	
+	<batch:job id="helloWorldJob">
+		<batch:step id="step1" parent="helloWorldStep" />
+	</batch:job>
 
 </beans>
