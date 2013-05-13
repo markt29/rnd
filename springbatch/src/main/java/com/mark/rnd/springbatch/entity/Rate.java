@@ -93,4 +93,16 @@ public class Rate {
 	public void setSellRate(String sellRate) {
 		this.sellRate = sellRate;
 	}
+
+	@Override
+	public String toString() {
+		return "Rate [branch=" + branch + ", xrateType=" + xrateType
+				+ ", currency=" + currency + ", qouteType=" + qouteType
+				+ ", midRate=" + midRate + ", centralBankRate="
+				+ centralBankRate + ", buySpread=" + buySpread
+				+ ", sellSpread=" + sellSpread + ", buyRate=" + buyRate
+				+ ", sellRate=" + sellRate + "]";
+	}
+	
+	
 }
