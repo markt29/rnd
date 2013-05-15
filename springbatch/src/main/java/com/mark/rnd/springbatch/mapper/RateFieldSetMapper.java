@@ -2,10 +2,12 @@ package com.mark.rnd.springbatch.mapper;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
 import com.mark.rnd.springbatch.entity.Rate;
 
+@Component
 public class RateFieldSetMapper implements FieldSetMapper<Rate> {
 
 	public Rate mapFieldSet(FieldSet fieldSet) throws BindException {

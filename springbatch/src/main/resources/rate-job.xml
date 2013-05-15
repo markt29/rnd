@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<import resource="launch-context.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.mark.rnd.springbatch"></context:component-scan>
+
+
+	<batch:job id="rateJob">
+		<batch:step id="singleStep">
+			<batch:tasklet>
+				<batch:chunk reader="rateItemReader" processor="rateProcessor"
+					writer="rateItemWriter" commit-interval="2" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="rateItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" value="ratedatafile.txt" />
+		<property name="linesToSkip" value="1" />
+		<property name="recordSeparatorPolicy" ref="simpleRecordSeparatorPolicy" />
+		<property name="lineMapper" ref="rateLineMapper" />
+	</bean>
+
+	<bean id="simpleRecordSeparatorPolicy"
+		class="org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy" />
+
+	<bean id="rateLineMapper"
+		class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+		<property name="lineTokenizer" ref="rateLineTokenizer" />
+		<property name="fieldSetMapper" ref="rateFieldSetMapper" />
+	</bean>
+
+	<bean id="rateLineTokenizer"
+		class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+		<property name="delimiter" value="," />
+		<property name="names"
+			value="branch,xrateType,currency,qouteType,midRate,centralBankRate,buySpread,sellSpread,buyRate,sellRate" />
+	</bean>
+
+	<bean id="rateItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource" value="file:target/outputs/ratepassthrough.txt" />
+		<property name="lineAggregator">
+			<bean
+				class="org.springframework.batch.item.file.transform.PassThroughLineAggregator" />
+		</property>
+	</bean>
+
+</beans>

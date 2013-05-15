@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<import resource="launch-context.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.mark.rnd.springbatch"></context:component-scan>
+
+
+	<batch:job id="eodJob">
+
+		<batch:step id="step1">
+			<batch:tasklet ref="taskletOne" />
+			<batch:next on="COMPLETED" to="split1" />
+			<batch:end on="FAILED" />
+		</batch:step>
+
+		<batch:split id="split1" task-executor="taskExecutor">
+			<batch:flow>
+				<batch:step id="step2">
+					<batch:tasklet ref="taskletTwo" />
+					<batch:next on="COMPLETED" to="split2" />
+				</batch:step>
+
+				<batch:split id="split2" task-executor="taskExecutor">
+					<batch:flow>
+						<batch:step id="step3">
+							<batch:tasklet ref="taskletThree" />
+						</batch:step>
+					</batch:flow>
+					<batch:flow>
+						<batch:step id="step4">
+							<batch:tasklet ref="taskletFour" />
+						</batch:step>
+					</batch:flow>
+				</batch:split>
+			</batch:flow>
+
+			<batch:flow>
+				<batch:step id="step5">
+					<batch:tasklet ref="taskletFive" />
+				</batch:step>
+			</batch:flow>
+			<batch:next on="COMPLETED" to="step6" />
+		</batch:split>
+
+		<batch:step id="step6">
+			<batch:tasklet ref="taskletSix" />
+			<batch:end on="COMPLETED" />
+			<batch:fail on="FAILED" />
+		</batch:step>
+
+	</batch:job>
+
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+	
+</beans>
