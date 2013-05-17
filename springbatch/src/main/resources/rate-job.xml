@@ -12,10 +12,10 @@
 
 
 	<batch:job id="rateJob">
-		<batch:step id="singleStep">
+		<batch:step id="singleStep" >
 			<batch:tasklet>
 				<batch:chunk reader="rateItemReader" processor="rateProcessor"
-					writer="rateItemWriter" commit-interval="2" />
+					writer="rateItemWriter" commit-interval="2"  />
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>

@@ -11,7 +11,11 @@ public class TaskletThree implements Tasklet {
 
 	public RepeatStatus execute(StepContribution arg0, ChunkContext arg1)
 			throws Exception {
-		System.out.println("TaskletThree");
+		for (int i = 0; i < 10; i++) {
+			System.out.println("TaskletThree:" + i);
+			Thread.sleep(300);
+		}
+		// throw new RuntimeException("TestException for taskletthree");
 		return RepeatStatus.FINISHED;
 	}
 

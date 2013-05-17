@@ -11,18 +11,19 @@
 	<context:component-scan base-package="com.mark.rnd.springbatch"></context:component-scan>
 
 
-	<batch:job id="eodJob">
+	<batch:job id="eodJob" >
 
-		<batch:step id="step1">
+		<batch:step id="phase1" >
 			<batch:tasklet ref="taskletOne" />
-			<batch:next on="COMPLETED" to="split1" />
+			<batch:next on="COMPLETED" to="phase2" />
 			<batch:end on="FAILED" />
 		</batch:step>
 
-		<batch:split id="split1" task-executor="taskExecutor">
+		<batch:split id="phase2" task-executor="taskExecutor">
+		
 			<batch:flow>
-				<batch:step id="step2">
-					<batch:tasklet ref="taskletTwo" />
+				<batch:step id="step2" >
+					<batch:tasklet ref="taskletTwo"  />
 					<batch:next on="COMPLETED" to="split2" />
 				</batch:step>
 
@@ -45,10 +46,12 @@
 					<batch:tasklet ref="taskletFive" />
 				</batch:step>
 			</batch:flow>
-			<batch:next on="COMPLETED" to="step6" />
+			
+			<batch:next on="COMPLETED" to="phase3" />
+			
 		</batch:split>
 
-		<batch:step id="step6">
+		<batch:step id="phase3">
 			<batch:tasklet ref="taskletSix" />
 			<batch:end on="COMPLETED" />
 			<batch:fail on="FAILED" />

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+	<import resource="launch-context.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.mark.rnd.springbatch"></context:component-scan>
+
+
+	<batch:job id="sampleJdbcJob">
+
+		<batch:step id="sampleEntity">
+			<batch:tasklet>
+				<batch:chunk reader="sampleEntityItemReader" processor="sampleEntityItemProcessor"
+					writer="sampleEntityUpdateWriter" commit-interval="2" />
+				<batch:listeners>
+					<batch:listener ref="stagingStepListener" />
+					<batch:listener ref="stagingChunkUpdater" />
+				</batch:listeners>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+		<property name="concurrencyLimit" value="2" />
+	</bean>
+
+	<bean id="sampleEntityItemReader"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sql"
+			value="select id, name, process_indicator, job_id from sample where job_id = #{jobParameters['run.id']} order by id" />
+		<property name="rowMapper" ref="sampleEntityRowMapper" />
+	</bean>
+
+	<!-- <bean id="sampleEntityRowMapper" class="com.mark.rnd.springbatch.mapper.SampleEnityRowMapper" 
+		/> -->
+
+
+	<bean id="stagingStepListener" class="com.mark.rnd.springbatch.listener.SampleStepListener"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="tableName" value="sample" />
+		<property name="whereClause"
+			value="where job_id is null and process_indicator is null" />
+		<property name="jobId" value="#{jobParameters['run.id']}" />
+	</bean>
+
+	<bean id="stagingChunkUpdater"
+		class="com.mark.rnd.springbatch.listener.SampleItemWriteListener"
+		scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="tableName" value="sample" />
+		<property name="whereClause" value="where id = ?" />
+	</bean>
+
+
+
+
+	<bean id="sampleEntityUpdateWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sql"
+			value="update sample set name = :name where id = :id" />
+		<property name="itemSqlParameterSourceProvider">
+			<bean
+				class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
+		</property>
+	</bean>
+
+</beans>
