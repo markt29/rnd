@@ -13,9 +13,10 @@ public class SampleEntityItemProcessor implements
 		SampleEntity processedEntity = new SampleEntity();
 
 		processedEntity.setId(sampleEntity.getId());
-		processedEntity.setName(sampleEntity.getName() + "PROCESSED");
+		processedEntity.setName(sampleEntity.getName() + "PROCESSED BY: "
+				+ Thread.currentThread().getName());
 		processedEntity.setJobid(sampleEntity.getJobid());
-		processedEntity.setProcessIndicator(sampleEntity.isProcessIndicator());
+		processedEntity.setProcessed(sampleEntity.isProcessed());
 
 		return processedEntity;
 	}

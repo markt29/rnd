@@ -11,7 +11,7 @@ import com.mark.rnd.springbatch.entity.SampleEntity;
 public class SampleItemWriteListener extends JdbcTemplate implements
 		ItemWriteListener<SampleEntity> {
 
-	private String SQL = " set process_indicator = true ";
+	private String SQL = " set processed = true ";
 	private String tableName;
 	private String whereClause = "";
 

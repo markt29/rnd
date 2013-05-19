@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SampleStepListener extends JdbcTemplate implements StepListener {
 
-	private String SQL = " set job_id = ?, process_indicator = false ";
+	private String SQL = " set job_id = ?, processed = false ";
 	private String tableName;
 	private String whereClause = "";
 	private long jobId;

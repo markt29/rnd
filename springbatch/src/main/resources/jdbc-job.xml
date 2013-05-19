@@ -14,9 +14,9 @@
 	<batch:job id="sampleJdbcJob">
 
 		<batch:step id="sampleEntity">
-			<batch:tasklet>
-				<batch:chunk reader="sampleEntityItemReader" processor="sampleEntityItemProcessor"
-					writer="sampleEntityUpdateWriter" commit-interval="2" />
+			<batch:tasklet task-executor="taskExecutor" throttle-limit="10">
+				<batch:chunk reader="synchronizedSampleEntityItemReader" processor="sampleEntityItemProcessor"
+					writer="sampleEntityUpdateWriter" commit-interval="100" />
 				<batch:listeners>
 					<batch:listener ref="stagingStepListener" />
 					<batch:listener ref="stagingChunkUpdater" />
@@ -27,7 +27,7 @@
 
 
 	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
-		<property name="concurrencyLimit" value="2" />
+		<property name="concurrencyLimit" value="10" />
 	</bean>
 
 	<bean id="sampleEntityItemReader"
@@ -35,20 +35,23 @@
 		scope="step">
 		<property name="dataSource" ref="dataSource" />
 		<property name="sql"
-			value="select id, name, process_indicator, job_id from sample where job_id = #{jobParameters['run.id']} order by id" />
+			value="select id, name, processed, job_id from sample where job_id = #{jobParameters['run.id']} order by id" />
 		<property name="rowMapper" ref="sampleEntityRowMapper" />
 	</bean>
 
-	<!-- <bean id="sampleEntityRowMapper" class="com.mark.rnd.springbatch.mapper.SampleEnityRowMapper" 
-		/> -->
-
+	<bean id="synchronizedSampleEntityItemReader"
+		class="com.mark.rnd.springbatch.reader.SynchronizedJdbcCursorItemReader"
+		scope="step">
+		<property name="jdbcItemReader" ref="sampleEntityItemReader" />
+		<property name="jdbcItemStream" ref="sampleEntityItemReader" />
+	</bean>
 
 	<bean id="stagingStepListener" class="com.mark.rnd.springbatch.listener.SampleStepListener"
 		scope="step">
 		<property name="dataSource" ref="dataSource" />
 		<property name="tableName" value="sample" />
 		<property name="whereClause"
-			value="where job_id is null and process_indicator is null" />
+			value="where job_id is null and processed is null" />
 		<property name="jobId" value="#{jobParameters['run.id']}" />
 	</bean>
 

@@ -17,7 +17,7 @@ public class SampleEntityRowMapper implements RowMapper<SampleEntity> {
 		entity.setId(rs.getInt("id"));
 		entity.setName(rs.getString("name"));
 		entity.setJobid(rs.getString("job_id"));
-		entity.setProcessIndicator(rs.getBoolean("process_indicator"));
+		entity.setProcessed(rs.getBoolean("processed"));
 
 		return entity;
 	}

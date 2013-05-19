@@ -5,7 +5,7 @@ public class SampleEntity {
 	private int id;
 	private String name;
 	private String jobid;
-	private boolean processIndicator;
+	private boolean processed;
 
 	public int getId() {
 		return id;
@@ -31,12 +31,14 @@ public class SampleEntity {
 		this.jobid = jobid;
 	}
 
-	public boolean isProcessIndicator() {
-		return processIndicator;
+	public boolean isProcessed() {
+		return processed;
 	}
 
-	public void setProcessIndicator(boolean processIndicator) {
-		this.processIndicator = processIndicator;
+	public void setProcessed(boolean processed) {
+		this.processed = processed;
 	}
+
+	
 
 }
