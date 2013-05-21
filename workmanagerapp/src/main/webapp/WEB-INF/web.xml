@@ -7,7 +7,7 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	
+
 	<servlet-mapping>
 		<servlet-name>mvc-dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
@@ -15,22 +15,22 @@
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/application-context.xml</param-value>
+		<param-value>/WEB-INF/application-context.xml,/WEB-INF/sample-job.xml</param-value>
 	</context-param>
 
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
 	<resource-ref>
-		<res-ref-name>sampleWorkManager</res-ref-name>
+		<res-ref-name>wm/WorkManager</res-ref-name>
 		<res-type>commonj.work.WorkManager</res-type>
 		<res-auth>Container</res-auth>
 		<res-sharing-scope>Shareable</res-sharing-scope>
 	</resource-ref>
-
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
 
 </web-app>
