@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+
+	<import resource="launch-context.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.mark.rnd"></context:component-scan>
+
+
+	<batch:job id="sampleJob">
+		<batch:step id="singleStep">
+			<batch:tasklet>
+				<batch:chunk reader="sampleItemReader" processor="sampleItemProcessor"
+					writer="sampleItemWriter" commit-interval="2" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="sampleItemReader" class="com.mark.rnd.remotechunking.reader.SampleItemReader">
+	</bean>
+
+	<bean id="sampleItemWriter" class="com.mark.rnd.remotechunking.writer.SampleItemWriter">
+	</bean>
+
+	<bean id="sampleItemProcessor"
+		class="com.mark.rnd.remotechunking.processor.SampleItemProcessor">
+	</bean>
+
+</beans>

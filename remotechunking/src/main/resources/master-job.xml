@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
+
+
+	<import resource="launch-context.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.mark.rnd"></context:component-scan>
+
+
+	<batch:job id="sampleJob">
+		<batch:step id="singleStep">
+			<batch:tasklet>
+				<batch:chunk reader="sampleItemReader" processor="sampleItemProcessor"
+					writer="sampleItemWriter" commit-interval="2" />
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="sampleItemReader" class="com.mark.rnd.remotechunking.reader.SampleItemReader">
+	</bean>
+
+	<bean id="sampleItemWriter" class="com.mark.rnd.remotechunking.writer.SampleItemWriter">
+	</bean>
+
+	<bean id="sampleItemProcessor"
+		class="com.mark.rnd.remotechunking.processor.SampleItemProcessor">
+	</bean>
+
+
+
+	<!-- Remote Chunking -->
+	<bean id="chunkHandler"
+		class="org.springframework.batch.integration.chunk.RemoteChunkHandlerFactoryBean">
+		<property name="chunkWriter" ref="chunkWriter" />
+		<property name="step" ref="singleStep" />
+	</bean>
+
+	<bean id="chunkWriter"
+		class="org.springframework.batch.integration.chunk.ChunkMessageChannelItemWriter"
+		scope="step">
+		<property name="messagingOperations" ref="messagingGateway" />
+		<property name="replyChannel" ref="replies" />
+		<property name="maxWaitTimeouts" value="10" />
+	</bean>
+
+	<bean id="messagingGateway" class="org.springframework.integration.core.MessagingTemplate">
+		<property name="defaultChannel" ref="requests" />
+		<property name="receiveTimeout" value="1000" />
+	</bean>
+
+	<bean id="headerExtractor"
+		class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor" />
+
+	<int:channel id="requests" />
+	<int:channel id="incoming" />
+	<int-jms:outbound-channel-adapter
+		connection-factory="connectionFactory" channel="requests"
+		destination-name="requests" />
+	<int:transformer input-channel="incoming"
+		output-channel="replies" ref="headerExtractor" method="extract" />
+
+
+
+
+
+
+
+
+</beans>
