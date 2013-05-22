@@ -60,13 +60,43 @@
 
 	<int:channel id="requests" />
 	<int:channel id="incoming" />
+	
 	<int-jms:outbound-channel-adapter
 		connection-factory="connectionFactory" channel="requests"
 		destination-name="requests" />
+		
 	<int:transformer input-channel="incoming"
 		output-channel="replies" ref="headerExtractor" method="extract" />
 
-
+	<int:channel id="replies">
+		<int:queue />
+		<int:interceptors>
+			<bean id="pollerInterceptor"
+				class="org.springframework.batch.integration.chunk.MessageSourcePollerInterceptor">
+				<property name="messageSource">
+					<bean
+						class="org.springframework.integration.jms.JmsDestinationPollingSource">
+						<constructor-arg>
+							<bean class="org.springframework.jms.core.JmsTemplate">
+								<property name="connectionFactory" ref="connectionFactory" />
+								<property name="defaultDestinationName" value="replies" />
+								<property name="receiveTimeout" value="1000" />
+							</bean>
+						</constructor-arg>
+					</bean>
+				</property>
+				<property name="channel" ref="incoming" />
+			</bean>
+		</int:interceptors>
+	</int:channel>
+	
+	
+	
+	<jms:listener-container connection-factory="connectionFactory"
+		transaction-manager="transactionManager" acknowledge="transacted">
+		<jms:listener destination="requests" ref="chunkHandler"
+			response-destination="replies" method="handleChunk" />
+	</jms:listener-container>
 
 
 
