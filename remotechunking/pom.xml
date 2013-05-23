@@ -12,19 +12,19 @@
 			<url>http://maven.springframework.org/release</url>
 		</repository>
 
-<!-- 		<repository> -->
-<!-- 			<id>javanet</id> -->
-<!-- 			<name>Repository for Maven2</name> -->
-<!-- 			<url>http://download.java.net/maven/2</url> -->
-<!-- 		</repository> -->
+		<!-- <repository> -->
+		<!-- <id>javanet</id> -->
+		<!-- <name>Repository for Maven2</name> -->
+		<!-- <url>http://download.java.net/maven/2</url> -->
+		<!-- </repository> -->
 
-<!-- 		<repository> -->
+		<!-- <repository> -->
 
-<!-- 			<id>codehausSnapshots</id> -->
-<!-- 			<name>Codehaus Snapshots</name> -->
-<!-- 			<url>http://snapshots.maven.codehaus.org/maven2</url> -->
-<!-- 			<layout>default</layout> -->
-<!-- 		</repository> -->
+		<!-- <id>codehausSnapshots</id> -->
+		<!-- <name>Codehaus Snapshots</name> -->
+		<!-- <url>http://snapshots.maven.codehaus.org/maven2</url> -->
+		<!-- <layout>default</layout> -->
+		<!-- </repository> -->
 	</repositories>
 
 
@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>
-			<version>5.7.0</version>
+			<version>5.5.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.activemq</groupId>
@@ -175,7 +175,18 @@
 			</exclusions>
 		</dependency>
 
+		<!-- Needed by ActiveMQ -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-api</artifactId> -->
+		<!-- <version>1.7.5</version> -->
+		<!-- </dependency> -->
 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.6</version>
+		</dependency>
 	</dependencies>
 
 
@@ -199,10 +210,9 @@
 								<manifest>
 									<mainClass>com.mark.rnd.remotechunking.SlaveDriver</mainClass>
 									<addClasspath>true</addClasspath>
-									<classpathPrefix>lib/</classpathPrefix>
+									<classpathPrefix>file:///C:/Users/mark.torrequemada/.m2/repository</classpathPrefix>
+									<classpathLayoutType>repository</classpathLayoutType>
 								</manifest>
-								<!-- <manifestFile >${project.build.outputDirectory}/METAINF/ -->
-								<!-- MANIFEST.MF</manifestFile> -->
 							</archive>
 						</configuration>
 					</plugin>
@@ -224,14 +234,11 @@
 							<archive>
 								<index>false</index>
 								<manifest>
-									<mainClass>
-										org.springframework.batch.core.launch.support.CommandLineJobRunner
-									</mainClass>
+									<mainClass>org.springframework.batch.core.launch.support.CommandLineJobRunner</mainClass>
 									<addClasspath>true</addClasspath>
-									<classpathPrefix>lib/</classpathPrefix>
+									<classpathPrefix>file:///C:/Users/mark.torrequemada/.m2/repository</classpathPrefix>
+									<classpathLayoutType>repository</classpathLayoutType>
 								</manifest>
-								<!-- <manifestFile>${project.build.outputDirectory}/METAINF/ -->
-								<!-- MANIFEST.MF</manifestFile> -->
 							</archive>
 						</configuration>
 					</plugin>

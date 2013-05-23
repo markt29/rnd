@@ -18,7 +18,7 @@ public class SampleItemReader implements ItemReader<SampleEntity> {
 
 	public SampleItemReader() {
 		atomicIndex.set(0);
-		for (int i = 0; i <= 1000; i++) {
+		for (int i = 0; i <= 10000; i++) {
 			SampleEntity sampleEntity = new SampleEntity();
 			sampleEntity.setId(i);
 			sampleEntity.setName("Name:" + i);
