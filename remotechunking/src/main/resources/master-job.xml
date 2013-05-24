@@ -33,11 +33,7 @@
 		class="com.mark.rnd.remotechunking.processor.SampleItemProcessor">
 	</bean>
 
-
-
 	<!-- Remote Chunking -->
-
-
 	<bean id="chunkHandler"
 		class="org.springframework.batch.integration.chunk.RemoteChunkHandlerFactoryBean">
 		<property name="chunkWriter" ref="chunkWriter" />
@@ -49,11 +45,9 @@
 		scope="step">
 		<property name="messagingOperations" ref="messagingGateway" />
 		<property name="replyChannel" ref="replies" />
-		<property name="maxWaitTimeouts" value="10" />
+		<property name="throttleLimit" value="50" />
+		<property name="maxWaitTimeouts" value="30000" />
 	</bean>
-
-	<int:service-activator input-channel="requests"
-		output-channel="replies" ref="chunkHandler" />
 
 	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 	</bean>
@@ -64,85 +58,30 @@
 		<property name="receiveTimeout" value="5000" />
 	</bean>
 
-	<int:channel id="requests" />
-	<int-jms:outbound-channel-adapter
-		connection-factory="connectionFactory" id="jmsRequests"
-		destination-name="requests" channel="requests" />
+	<int:service-activator input-channel="requests"
+		output-channel="replies" ref="chunkHandler" />
 
-	<!-- Remote Chunking Replies From Slave -->
+	<int:channel id="requests" />
+
+	<int-jms:outbound-channel-adapter
+		connection-factory="connectionFactory" id="requests" destination-name="requests" />
+
 	<int-jms:inbound-channel-adapter id="jmsReplies"
 		connection-factory="connectionFactory" destination-name="replies"
 		channel="replies">
-		<int:poller fixed-delay="200">
-		</int:poller>
+		<int:poller fixed-delay="200"></int:poller>
 	</int-jms:inbound-channel-adapter>
-
-
-	<int:transformer input-channel="incoming"
-		output-channel="replies" ref="headerExtractor" method="extract" />
-
-	<bean id="headerExtractor"
-		class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor" />
 
 	<int:channel id="replies">
 		<int:queue />
 		<int:interceptors>
-			<bean id="pollerInterceptor"
-				class="org.springframework.batch.integration.chunk.MessageSourcePollerInterceptor">
-				<property name="messageSource">
-					<bean
-						class="org.springframework.integration.jms.JmsDestinationPollingSource">
-						<constructor-arg>
-							<bean class="org.springframework.jms.core.JmsTemplate">
-								<property name="connectionFactory" ref="connectionFactory" />
-								<property name="defaultDestinationName" value="replies" />
-								<property name="receiveTimeout" value="1000" />
-							</bean>
-						</constructor-arg>
-					</bean>
-				</property>
-				<property name="channel" ref="incoming" />
-			</bean>
+			<int:wire-tap channel="loggingChannel" />
 		</int:interceptors>
 	</int:channel>
 
+	<int:logging-channel-adapter id="loggingChannel"
+		level="INFO" log-full-message="true" />
 
-
-
-
-
-
-
-
-	<jms:listener-container connection-factory="connectionFactory"
-		transaction-manager="transactionManager" acknowledge="transacted">
-		<jms:listener destination="requests" ref="chunkHandler"
-	response-destination="replies" method="handleChunk" />
-	</jms:listener-container>
-
-
-
-
-
-
-
-
-
-
-
-	<!-- <int:channel id="replies"> -->
-	<!-- <int:queue /> -->
-	<!-- <int:interceptors> -->
-	<!-- <int:wire-tap channel="loggingChannel" /> -->
-	<!-- </int:interceptors> -->
-	<!-- </int:channel> -->
-
-	<!-- <int:logging-channel-adapter id="loggingChannel" -->
-	<!-- level="INFO" log-full-message="true" /> -->
-
-
-	<!-- <task:executor id="poolExecutor" pool-size="10" -->
-	<!-- queue-capacity="0" /> -->
-
-	<!-- <task:scheduler id="taskScheduler" pool-size="10" /> -->
+	<task:executor id="poolExecutor" pool-size="50"
+		queue-capacity="0" />
 </beans>

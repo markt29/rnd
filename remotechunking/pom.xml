@@ -11,20 +11,6 @@
 			<name>Spring Maven RELEASE Repository</name>
 			<url>http://maven.springframework.org/release</url>
 		</repository>
-
-		<!-- <repository> -->
-		<!-- <id>javanet</id> -->
-		<!-- <name>Repository for Maven2</name> -->
-		<!-- <url>http://download.java.net/maven/2</url> -->
-		<!-- </repository> -->
-
-		<!-- <repository> -->
-
-		<!-- <id>codehausSnapshots</id> -->
-		<!-- <name>Codehaus Snapshots</name> -->
-		<!-- <url>http://snapshots.maven.codehaus.org/maven2</url> -->
-		<!-- <layout>default</layout> -->
-		<!-- </repository> -->
 	</repositories>
 
 
@@ -145,21 +131,32 @@
 
 
 		<!-- Remote chunking -->
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-core</artifactId>
-			<version>2.2.3.RELEASE</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.integration</groupId> -->
+		<!-- <artifactId>spring-integration-core</artifactId> -->
+		<!-- <version>2.2.3.RELEASE</version> -->
+		<!-- </dependency> -->
 
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.integration</groupId> -->
+		<!-- <artifactId>spring-integration-jms</artifactId> -->
+		<!-- <version>2.2.3.RELEASE</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jms</artifactId>
-			<version>2.2.3.RELEASE</version>
+			<version>2.0.3.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-integration</artifactId>
-			<version>1.2.0.RELEASE</version>
+			<version>1.2.1.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 
 
@@ -169,8 +166,8 @@
 			<version>5.5.1</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.apache.activemq</groupId>
-					<artifactId>activeio-core</artifactId>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -235,6 +232,33 @@
 								<index>false</index>
 								<manifest>
 									<mainClass>org.springframework.batch.core.launch.support.CommandLineJobRunner</mainClass>
+									<addClasspath>true</addClasspath>
+									<classpathPrefix>file:///C:/Users/mark.torrequemada/.m2/repository</classpathPrefix>
+									<classpathLayoutType>repository</classpathLayoutType>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>broker</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<finalName>broker</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<archive>
+								<index>false</index>
+								<manifest>
+									<mainClass>com.mark.rnd.remotechunking.BrokerService</mainClass>
 									<addClasspath>true</addClasspath>
 									<classpathPrefix>file:///C:/Users/mark.torrequemada/.m2/repository</classpathPrefix>
 									<classpathLayoutType>repository</classpathLayoutType>
