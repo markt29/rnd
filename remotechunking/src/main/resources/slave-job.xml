@@ -20,8 +20,9 @@
 			<bean class="org.springframework.batch.core.step.item.SimpleChunkProcessor">
 				<property name="itemWriter" ref="sampleItemWriter" />
 				<property name="itemProcessor">
-					<bean
-						class="org.springframework.batch.item.support.PassThroughItemProcessor" />
+					<bean id="sampleItemProcessor"
+						class="com.mark.rnd.remotechunking.processor.SampleItemProcessor">
+					</bean>
 				</property>
 			</bean>
 		</property>
